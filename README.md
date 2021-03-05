@@ -16,7 +16,7 @@ prog = do
   pure $ zipWith (+) list1 list2
 ```
 
-The issue with this code is that it relies making an assertion before every use of `zipWith` that the outgoing list will be of equal length to the incoming lists.
+The issue with this code is that it relies making an assertion before every use of `zipWith`.
 
 A better way to do this would be to reify the value-level assertion into the type level.
 
