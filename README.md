@@ -59,6 +59,12 @@ test6 list0 list1 list2 list3 = Ix.do
   ipure $ zipWithE (+) (l <+> y) (x <+> r)
 ```
 
+According to Wikipedia:
+
+> In computer science and logic, a dependent type is a type whose definition depends on a value.
+
+This library brings dependent types to vectors by using the type system to allow certain operations, like `zipWithE`, to be performed only if certain assertions, like `assertEq2`, succeed.
+
 ## TODO
 
 - [ ] make equality transitive
