@@ -68,8 +68,6 @@ class Unkable k (u :: Unk') | k -> u, u -> k
 instance unkableUnkable0 :: Unkable Unk0' Unk0'
 instance unkableUnkableX :: Unkable (UnkX' a) (UnkX' a)
 
-
-
 class LNat (a :: Nat') (b :: Nat') (c :: Nat') (d :: Nat') | a b -> c d
 
 instance lNatA :: LNat Zero' Zero' Zero' Zero'
