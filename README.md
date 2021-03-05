@@ -18,7 +18,11 @@ prog = do
 
 The issue with this code is that it relies making an assertion before every use of `zipWith` that the outgoing list will be of equal length to the incoming lists.
 
-A better way to do this is to make the assertion at the type-level.
+A better way to do this would be to reify the value-level assertion into the type level.
+
+According to Wikipedia:
+
+> In computer science and logic, a dependent type is a type whose definition depends on a value.
 
 In the [tests](./test/Main.purs) of this library, you'll see the following commented-out code:
 
@@ -59,11 +63,7 @@ test6 list0 list1 list2 list3 = Ix.do
   ipure $ zipWithE (+) (l <+> y) (x <+> r)
 ```
 
-According to Wikipedia:
-
-> In computer science and logic, a dependent type is a type whose definition depends on a value.
-
-This library brings dependent types to vectors by using the type system to allow certain operations, like `zipWithE`, to be performed only if certain assertions, like `assertEq2`, succeed.
+This library brings dependent types to vectors by using the type system to allow certain operations, like `zipWithE`, to be performed only if certain assertions about values, like `assertEq2`, succeed.
 
 ## TODO
 
