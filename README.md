@@ -16,7 +16,7 @@ prog = do
   pure $ zipWith (+) list1 list2
 ```
 
-The issue with this code is that it relies making an assertion before every use of `zipWith`.
+The issue with this code is that it requires remembering to make an assertion before every use of `zipWith`.
 
 A better way to do this would be to reify the value-level assertion into the type level.
 
