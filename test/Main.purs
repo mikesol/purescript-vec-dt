@@ -6,15 +6,15 @@ import Control.Applicative.Indexed (class IxApplicative, ipure)
 import Control.Apply.Indexed (class IxApply)
 import Control.Bind.Indexed (class IxBind)
 import Control.Monad.Error.Class (class MonadThrow)
-import Control.Monad.Except (Except)
 import Control.Monad.Indexed (class IxMonad)
 import Control.Monad.Indexed.Qualified as Ix
-import Data.DT.Vec (Unk', Unk0', UnkX', VecSig', assertEq, fill, vec', zipWithE, (+>), (<+>))
+import Data.DT.Vec (class Unkable, Unk', Unk0', UnkX', Var', Vec, VecSig', assertEq, fill, toList, vec', zipWithE, (+>), (<+>))
 import Data.Functor.Indexed (class IxFunctor)
-import Data.List (List)
+import Data.List (List(..), (:))
 import Data.Newtype (class Newtype, unwrap)
 import Data.Tuple.Nested ((/\))
 import Effect (Effect)
+import Effect.Class.Console (log)
 import Effect.Exception (Error, error)
 
 vec :: forall a m (u :: Unk'). VecSig' a m u u (UnkX' u)
@@ -22,7 +22,7 @@ vec = vec' :: VecSig' a m u u (UnkX' u)
 
 newtype Ctxt :: forall k1 k2. k1 -> k2 -> Type -> Type
 newtype Ctxt i o a
-  = Ctxt (Except Error a)
+  = Ctxt (Effect a)
 derive instance newtypeCtxt :: Newtype (Ctxt i o a) _
 derive newtype instance freeProgramFunctor :: Functor (Ctxt i o)
 derive newtype instance freeProgramApply :: Apply (Ctxt i o)
@@ -39,6 +39,13 @@ instance freeProgramIxApply :: IxApplicative Ctxt where
 instance freeProgramIxBind :: IxBind Ctxt where
   ibind (Ctxt monad) function = Ctxt (monad >>= (unwrap <<< function))
 instance freeProgramIxMonad :: IxMonad Ctxt
+
+testSig :: ∀ i m o (u ∷ Unk'). Unkable i u => Unkable m (UnkX' u) => Unkable o (UnkX' (UnkX' u)) => List Int → List Int → Ctxt i o (Vec (Var' u) Int)
+testSig list0 list1 = Ix.do
+  v0 <- vec' list0
+  v1 <- (vec' :: VecSig' Int Ctxt (UnkX' u) m o) list1
+  l /\ r <- assertEq (error "not eq") (v0 /\ v1)
+  ipure $ zipWithE (+) l r
 
 test0 (list0 :: List Int) (list1 :: List Int) = Ix.do
   ipure unit :: Ctxt Unk0' Unk0' Unit
@@ -151,4 +158,7 @@ test11 (list0 :: List Int) (list1 :: List Int) = Ix.do
   ipure $ zipWithE (+) (zipWithE (+) l r) (fill l (const 0))
 
 main :: Effect Unit
-main = mempty
+main = do
+  let 
+    (Ctxt toPrint) = test0 (1 : 2 : Nil) (3 : 4 : Nil)
+  toPrint >>= log <<< show <<< toList
