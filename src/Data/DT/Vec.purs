@@ -14,8 +14,6 @@ module Data.DT.Vec
   , class BalanceExpr
   , class EqExpr
   , class Leftmost
-  , class LUnk
-  , class LNat
   , consVec
   , appendVec
   , vec
@@ -68,35 +66,33 @@ class Unkable k (u :: Unk') | k -> u, u -> k
 instance unkableUnkable0 :: Unkable Unk0' Unk0'
 instance unkableUnkableX :: Unkable (UnkX' a) (UnkX' a)
 
-class LNat (a :: Nat') (b :: Nat') (c :: Nat') (d :: Nat') | a b -> c d
 
-instance lNatA :: LNat Zero' Zero' Zero' Zero'
+instance lNatA :: Leftmost Zero' Zero' Zero' Zero'
 
-instance lNatB :: LNat (After' x) Zero' Zero' (After' x)
+instance lNatB :: Leftmost (After' x) Zero' Zero' (After' x)
 
-instance lNatC :: LNat Zero' (After' x) Zero' (After' x)
+instance lNatC :: Leftmost Zero' (After' x) Zero' (After' x)
 
-instance lNatD :: LNat a b x y => LNat (After' a) (After' b) x y
+instance lNatD :: Leftmost a b x y => Leftmost (After' a) (After' b) x y
 
-class LUnk (a :: Unk') (b :: Unk') (c :: Unk') (d :: Unk') | a b -> c d
+instance lUnkA :: Leftmost Unk0' Unk0' Unk0' Unk0'
 
-instance lUnkA :: LUnk Unk0' Unk0' Unk0' Unk0'
+instance lUnkB :: Leftmost (UnkX' x) Unk0' Unk0' (UnkX' x)
 
-instance lUnkB :: LUnk (UnkX' x) Unk0' Unk0' (UnkX' x)
+instance lUnkC :: Leftmost Unk0' (UnkX' x) Unk0' (UnkX' x)
 
-instance lUnkC :: LUnk Unk0' (UnkX' x) Unk0' (UnkX' x)
+instance lUnkD :: Leftmost a b x y => Leftmost (UnkX' a) (UnkX' b) x y
 
-instance lUnkD :: LUnk a b x y => LUnk (UnkX' a) (UnkX' b) x y
-
-class Leftmost (a :: Expr') (b :: Expr') (c :: Expr') (d :: Expr') | a b -> c d
+class Leftmost :: forall k. k -> k -> k -> k -> Constraint
+class Leftmost a b c d | a b -> c d
 
 instance leftmostLeftmostA :: Leftmost (Const' a) (Var' b) (Var' b) (Const' a)
 
 instance leftmostLeftmostB :: Leftmost (Var' b) (Const' a) (Var' b) (Const' a)
 
-instance leftmostLeftmostC :: LNat a b x y => Leftmost (Const' a) (Const' b) (Const' x) (Const' y)
+instance leftmostLeftmostC :: Leftmost a b x y => Leftmost (Const' a) (Const' b) (Const' x) (Const' y)
 
-instance leftmostLeftmostD :: LUnk a b x y => Leftmost (Var' b) (Var' a) (Var' x) (Var' y)
+instance leftmostLeftmostD :: Leftmost a b x y => Leftmost (Var' b) (Var' a) (Var' x) (Var' y)
 
 class BalanceExpr (a :: Expr') (b :: Expr') | a -> b
 

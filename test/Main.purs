@@ -13,6 +13,7 @@ import Data.DT.Vec (Unk0', assertEq, replicate, vec, zipWithE, (+>), (<+>))
 import Data.Functor.Indexed (class IxFunctor)
 import Data.Newtype (class Newtype, unwrap)
 import Data.Tuple.Nested ((/\))
+import Effect (Effect)
 import Effect.Exception (Error, error)
 
 newtype Ctxt :: forall k1 k2. k1 -> k2 -> Type -> Type
@@ -118,3 +119,6 @@ test8 list0 list1 list2 = Ix.do
   (Tuple x r) <- assertEq (error "not eq") m v2
   ipure $ zipWithE (+) l r
 -}
+
+main :: Effect Unit
+main = mempty
