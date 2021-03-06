@@ -29,12 +29,15 @@ module Data.DT.Vec
 
 import Prelude
 
+import Control.Apply (lift2)
 import Control.Monad.Error.Class (class MonadThrow, throwError)
-import Data.List (List(..), (:))
+import Data.FoldableWithIndex (class FoldableWithIndex)
+import Data.FunctorWithIndex (class FunctorWithIndex)
+import Data.List (List(..), fold, (:))
 import Data.List as L
 import Data.Traversable (class Foldable, class Traversable)
+import Data.TraversableWithIndex (class TraversableWithIndex)
 import Data.Tuple.Nested ((/\), type (/\))
-import Data.Unfoldable (class Unfoldable, class Unfoldable1)
 
 data Nat'
 
@@ -63,19 +66,35 @@ data Nat
 newtype Vec (n :: Expr') a
   = Vec (List a)
 
-derive newtype instance functorVec :: Functor (Vec n)
-derive newtype instance applicativeVec :: Applicative (Vec n)
-derive newtype instance applyVec :: Apply (Vec n)
-derive newtype instance bindVec :: Bind (Vec n)
-derive newtype instance monadVec :: Monad (Vec n)
-derive newtype instance foldableVec :: Foldable (Vec n)
-derive newtype instance traversableVec :: Traversable (Vec n)
-derive newtype instance unfoldable1Vec :: Unfoldable1 (Vec n)
-derive newtype instance unfoldableVec :: Unfoldable (Vec n)
-instance semigroupVec0 :: Semigroup (Vec (Const' Zero') a) where
-  append _ _ = Vec Nil
-instance monoidVec0 :: Monoid (Vec (Const' Zero') a) where
-  mempty = Vec Nil
+derive newtype instance eqVec :: Eq a => Eq (Vec s a)
+
+derive newtype instance functorVec :: Functor (Vec s)
+
+derive newtype instance foldableVec :: Foldable (Vec s)
+
+derive newtype instance functorWithIndexVec :: FunctorWithIndex Int (Vec s)
+
+derive newtype instance foldableWithIndexVec :: FoldableWithIndex Int (Vec s)
+
+derive newtype instance traversableWithIndexVec :: TraversableWithIndex Int (Vec s)
+
+derive newtype instance traversableVec :: Traversable (Vec s)
+
+derive newtype instance applyVec :: Apply (Vec s)
+
+instance applicativeVec0 :: Applicative (Vec (Const' Zero')) where
+  pure = Vec <<< pure
+instance applicativeVecN :: Applicative (Vec (Const' x)) => Applicative (Vec (Const' (After' x))) where
+  pure a = let Vec rest = (pure :: forall a. a -> (Vec (Const' x)) a) a in Vec (a : rest)
+instance applicativeVecP :: (Applicative (Vec x), Applicative (Vec y)) => Applicative (Vec (Plus' x y)) where
+  pure a = pure a <+> pure a
+
+instance showVec :: Show a => Show (Vec s a) where
+  show (Vec v) = "(" <> fold (map (\e -> show e <> " +> ") v) <> "empty)"
+
+instance semigroupVec :: (Semigroup a) => Semigroup (Vec s a) where
+  append = lift2 append
+
 
 class Unkable :: ∀ (k1 ∷ Type) (k2 ∷ Type). k1 → k2 → Unk' → Constraint
 class Unkable i o (u :: Unk') | i -> u o, o -> u i
