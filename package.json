@@ -1,0 +1,28 @@
+{
+  "name": "purescript-vec-dt",
+  "version": "1.0.0",
+  "description": "Dependently typed vectors in PureScript.",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "purescript": "^0.14.0",
+    "spago": "^0.19.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mikesol/purescript-vec-dt.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mikesol/purescript-vec-dt/issues"
+  },
+  "homepage": "https://github.com/mikesol/purescript-vec-dt#readme"
+}
