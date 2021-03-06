@@ -3,12 +3,7 @@ on: push
 jobs:
   container-job:
     runs-on: ubuntu-latest
-    env:
-      CALLING_FROM_GITHUB: yes
     container: node:10.18-jessie
-    defaults:
-      run:
-        working-directory: ./data_writer
     steps:
       - name: Check out repository code
         uses: actions/checkout@v2
