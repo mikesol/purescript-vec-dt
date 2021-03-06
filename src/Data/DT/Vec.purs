@@ -33,7 +33,6 @@ import Control.Monad.Error.Class (class MonadThrow, throwError)
 import Data.List (List(..), (:))
 import Data.List as L
 import Data.Tuple.Nested ((/\), type (/\))
-import Data.Unfoldable as U
 
 data Nat'
 
@@ -62,11 +61,10 @@ data Nat
 newtype Vec (n :: Expr') a
   = Vec (List a)
 
-class Unkable :: forall k. k -> Unk' -> Constraint
-class Unkable k (u :: Unk') | k -> u
+class Unkable :: ∀ (k1 ∷ Type) (k2 ∷ Type). k1 → k2 → Unk' → Constraint
+class Unkable i o (u :: Unk') | i -> u o, o -> u i
 
-instance unkableUnkable0 :: Unkable Unk0' Unk0'
-instance unkableUnkableX :: Unkable (UnkX' a) (UnkX' a)
+instance unkableUnkable0 :: Unkable u (UnkX' u) u
 
 
 instance lNatA :: Leftmost Zero' Zero' Zero' Zero'
@@ -161,7 +159,7 @@ instance eqExpr :: (BalanceExpr a c, BalanceExpr b c) => EqExpr a b
 -- | Construct a vector of unknown length
 -- |
 type VecSig' :: forall ix ox. Type -> (ix -> ox -> Type -> Type) -> Unk' -> ix -> ox -> Type
-type VecSig' a m (u :: Unk') i o = Unkable i u => Unkable o (UnkX' u) => Applicative (m i o) => List a -> m i o (Vec (Var' u) a)
+type VecSig' a m (u :: Unk') i o = Unkable i o u => Applicative (m i o) => List a -> m i o (Vec (Var' u) a)
 vec' :: forall a m (u :: Unk') i o. VecSig' a m u i o
 vec' = pure <<< Vec
 

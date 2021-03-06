@@ -8,7 +8,7 @@ import Control.Bind.Indexed (class IxBind)
 import Control.Monad.Error.Class (class MonadThrow)
 import Control.Monad.Indexed (class IxMonad)
 import Control.Monad.Indexed.Qualified as Ix
-import Data.DT.Vec (class Unkable, Unk', Unk0', UnkX', Var', Vec, VecSig', assertEq, fill, toList, vec', zipWithE, (+>), (<+>))
+import Data.DT.Vec (After', Const', Plus', Unk', Unk0', UnkX', Var', Vec, VecSig', Zero', assertEq, fill, toList, vec', zipWithE, (+>), (<+>))
 import Data.Functor.Indexed (class IxFunctor)
 import Data.List (List(..), (:))
 import Data.Newtype (class Newtype, unwrap)
@@ -40,19 +40,13 @@ instance freeProgramIxBind :: IxBind Ctxt where
   ibind (Ctxt monad) function = Ctxt (monad >>= (unwrap <<< function))
 instance freeProgramIxMonad :: IxMonad Ctxt
 
-testSig :: ∀ i m o (u ∷ Unk'). Unkable i u => Unkable m (UnkX' u) => Unkable o (UnkX' (UnkX' u)) => List Int → List Int → Ctxt i o (Vec (Var' u) Int)
-testSig list0 list1 = Ix.do
-  v0 <- vec' list0
-  v1 <- (vec' :: VecSig' Int Ctxt (UnkX' u) m o) list1
-  l /\ r <- assertEq (error "not eq") (v0 /\ v1)
-  ipure $ zipWithE (+) l r
-
-test0 (list0 :: List Int) (list1 :: List Int) = Ix.do
-  ipure unit :: Ctxt Unk0' Unk0' Unit
+test0 :: ∀ (u ∷ Unk') i. Semiring i => List i → List i → Ctxt u (UnkX' (UnkX' u)) (Vec (Var' u) i)
+test0 list0 list1 = Ix.do
   v0 <- vec list0
   v1 <- vec list1
   l /\ r <- assertEq (error "not eq") (v0 /\ v1)
   ipure $ zipWithE (+) l r
+
 -----
 -- doesn't compile because we haven't asserted equality
 
@@ -61,18 +55,19 @@ test1 (list0 :: List Int) (list1 :: List Int) = Ix.do
   ipure unit :: Ctxt Unk0' Unk0' Unit
   v0 <- vec list0
   v1 <- vec list1
-  ipure $ zipWithE (+) (v0 /\ v1)
+  ipure $ zipWithE (+) v0 v1
 -}
 -- compiles because the vec cons operation preserves equality
-test2 (list0 :: List Int) (list1 :: List Int) = Ix.do
-  ipure unit :: Ctxt Unk0' Unk0' Unit
+test2 :: ∀ (u ∷ Unk'). List Int → List Int → Ctxt u (UnkX' (UnkX' u)) (Vec (Plus' (Const' (After' Zero')) (Var' u)) Int)
+test2 list0 list1 = Ix.do
   v0 <- vec list0
   v1 <- vec list1
   l /\ r <- assertEq (error "not eq") (v0 /\ v1)
   ipure $ zipWithE (+) (1 +> l) (5 +> r)
 -- compiles because the vec append operation preserves equality
-test3 (list0 :: List Int) (list1 :: List Int) (list2 :: List Int) = Ix.do
-  ipure unit :: Ctxt Unk0' Unk0' Unit
+
+test3 :: ∀ (u ∷ Unk'). List Int → List Int → List Int → Ctxt Unk0' u (Vec (Plus' (Var' (UnkX' (UnkX' Unk0'))) (Var' Unk0')) Int)
+test3 list0 list1 list2 = Ix.do
   v0 <- vec list0
   v1 <- vec list1
   v2 <- vec list2
