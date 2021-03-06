@@ -11,6 +11,7 @@ module Data.DT.Vec
   , UnkX'
   , Var'
   , VecSig'
+  , class AssertEq
   , class Unkable
   , class BalanceExpr
   , class EqExpr
@@ -29,9 +30,9 @@ module Data.DT.Vec
 import Prelude
 
 import Control.Monad.Error.Class (class MonadThrow, throwError)
-import Data.List (List(..))
+import Data.List (List(..), (:))
 import Data.List as L
-import Data.Tuple.Nested((/\), type (/\))
+import Data.Tuple.Nested ((/\), type (/\))
 import Data.Unfoldable as U
 
 data Nat'
@@ -164,13 +165,29 @@ type VecSig' a m (u :: Unk') i o = Unkable i u => Unkable o (UnkX' u) => Applica
 vec' :: forall a m (u :: Unk') i o. VecSig' a m u i o
 vec' = pure <<< Vec
 
-
+leq :: forall a. Array (List a) -> Boolean
+leq = go <<< L.fromFoldable
+  where
+  go Nil = true
+  go (a : Nil) = true
+  go (a : b : c) = L.length a == L.length b && go (b : c)
 -- | Construct a vector of unknown length
 -- |
-assertEq :: forall a err m (j :: Expr') (k :: Expr').  MonadThrow err m => err -> Vec j a -> Vec k a -> m ((Vec j a) /\ (Vec j a))
-assertEq err (Vec a) (Vec b)
-  | L.length a == L.length b = pure $ (Vec a) /\ (Vec b)
-  | otherwise = throwError err
+class AssertEq i o | i -> o where
+  assertEq :: forall (a :: Type) (err :: Type) (m :: Type -> Type).  MonadThrow err m => err -> i -> m o
+
+instance assertEq0 :: AssertEq (Vec j a /\ Vec k a) (Vec j a /\ Vec j a) where
+  assertEq err (Vec a /\ Vec b)
+    | leq [a,b] = pure $ Vec a /\ Vec b
+    | otherwise = throwError err
+instance assertEq1 :: AssertEq (Vec j a /\ Vec k a /\ Vec l a) (Vec j a /\ Vec j a  /\ Vec j a) where
+  assertEq err (Vec a /\ Vec b /\ Vec c)
+    | leq [a,b,c] = pure $ Vec a /\ Vec b  /\ Vec c
+    | otherwise = throwError err
+instance assertEq2 :: AssertEq (Vec j a /\ Vec k a  /\ Vec l a /\ Vec m a) (Vec j a /\ Vec j a  /\ Vec j a /\ Vec j a) where
+  assertEq err (Vec a /\ Vec b /\ Vec c /\ Vec d)
+    | leq [a,b,c,d] = pure $ Vec a /\ Vec b  /\ Vec c /\ Vec d
+    | otherwise = throwError err
 
 consVec :: forall (a :: Expr') x. x -> Vec a x -> Vec (Plus' (Const' (After' Zero')) a) x
 consVec a (Vec x) = Vec (Cons a x)
