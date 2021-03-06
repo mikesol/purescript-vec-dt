@@ -36,7 +36,7 @@ test1 (list0 :: List Int) (list1 :: List Int) = Ix.do
   ipure $ zipWithE (+) (v0 /\ v1)
 ```
 
-If you comment it back in, you should see a red squiggly under `zipWithE`. That's because we have not made an assertion before zipWithE that the two lists are of equal length.
+If you comment it back in, you should see a red squiggly under `zipWithE`. That's because we have not made an assertion before `zipWithE` that the two lists are of equal length.
 
 Instead, we need to do:
 
