@@ -21,7 +21,6 @@ module Data.DT.Vec
   , vec'
   , assertEq
   , zipWithE
-  , replicate
   , (+>)
   , (<+>)
   , fill
@@ -205,9 +204,6 @@ nil = Vec Nil
 
 zipWithE :: forall (a :: Expr') (b :: Expr') x y z. EqExpr a b => (x -> y -> z) -> Vec a x -> Vec b y -> Vec a z
 zipWithE f (Vec a) (Vec b) = Vec (L.zipWith f a b)
-
-replicate :: forall (a :: Expr') x y. Vec a y -> x -> Vec a x
-replicate (Vec l) i = Vec (U.replicate (L.length l) i)
 
 fill :: forall (a :: Expr') x. Vec a x -> Function Int ~> Vec a
 fill (Vec l) f = Vec (f <$> L.range 0 (L.length l))
