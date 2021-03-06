@@ -9,7 +9,7 @@ import Control.Monad.Error.Class (class MonadThrow)
 import Control.Monad.Except (Except)
 import Control.Monad.Indexed (class IxMonad)
 import Control.Monad.Indexed.Qualified as Ix
-import Data.DT.Vec (Unk', Unk0', UnkX', VecSig', assertEq, fill, replicate, vec', zipWithE, (+>), (<+>))
+import Data.DT.Vec (Unk', Unk0', UnkX', VecSig', assertEq, fill, vec', zipWithE, (+>), (<+>))
 import Data.Functor.Indexed (class IxFunctor)
 import Data.List (List)
 import Data.Newtype (class Newtype, unwrap)
@@ -106,8 +106,8 @@ test7 (list0 :: List Int) (list1 :: List Int) = Ix.do
   v0 <- vec list0
   v1 <- vec list1
   l /\ r <- assertEq (error "not eq") (v0 /\ v1)
-  let repl = replicate r 5
-  let repr = replicate l 6
+  let repl = fill r $ const 5
+  let repr = fill l $ const 6
   ipure $ zipWithE (+) (repl <+> l) (repr <+> r)
 
 
