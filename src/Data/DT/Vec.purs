@@ -32,7 +32,9 @@ import Prelude
 import Control.Monad.Error.Class (class MonadThrow, throwError)
 import Data.List (List(..), (:))
 import Data.List as L
+import Data.Traversable (class Foldable, class Traversable)
 import Data.Tuple.Nested ((/\), type (/\))
+import Data.Unfoldable (class Unfoldable, class Unfoldable1)
 
 data Nat'
 
@@ -60,6 +62,20 @@ data Nat
 
 newtype Vec (n :: Expr') a
   = Vec (List a)
+
+derive newtype instance functorVec :: Functor (Vec n)
+derive newtype instance applicativeVec :: Applicative (Vec n)
+derive newtype instance applyVec :: Apply (Vec n)
+derive newtype instance bindVec :: Bind (Vec n)
+derive newtype instance monadVec :: Monad (Vec n)
+derive newtype instance foldableVec :: Foldable (Vec n)
+derive newtype instance traversableVec :: Traversable (Vec n)
+derive newtype instance unfoldable1Vec :: Unfoldable1 (Vec n)
+derive newtype instance unfoldableVec :: Unfoldable (Vec n)
+instance semigroupVec0 :: Semigroup (Vec (Const' Zero') a) where
+  append _ _ = Vec Nil
+instance monoidVec0 :: Monoid (Vec (Const' Zero') a) where
+  mempty = Vec Nil
 
 class Unkable :: ∀ (k1 ∷ Type) (k2 ∷ Type). k1 → k2 → Unk' → Constraint
 class Unkable i o (u :: Unk') | i -> u o, o -> u i
