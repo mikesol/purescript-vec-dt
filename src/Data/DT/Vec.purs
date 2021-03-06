@@ -209,7 +209,7 @@ zipWithE f (Vec a) (Vec b) = Vec (L.zipWith f a b)
 replicate :: forall (a :: Expr') x y. Vec a y -> x -> Vec a x
 replicate (Vec l) i = Vec (U.replicate (L.length l) i)
 
-fill :: forall (a :: Expr') x b. Vec a x -> (Int -> b) -> Vec a b
+fill :: forall (a :: Expr') x. Vec a x -> Function Int ~> Vec a
 fill (Vec l) f = Vec (f <$> L.range 0 (L.length l))
 
 toList :: forall (a :: Expr'). Vec a ~> L.List

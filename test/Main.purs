@@ -9,7 +9,7 @@ import Control.Monad.Error.Class (class MonadThrow)
 import Control.Monad.Except (Except)
 import Control.Monad.Indexed (class IxMonad)
 import Control.Monad.Indexed.Qualified as Ix
-import Data.DT.Vec (Unk', Unk0', UnkX', Var', Vec, VecSig', assertEq, replicate, vec', zipWithE, (+>), (<+>))
+import Data.DT.Vec (Unk', Unk0', UnkX', VecSig', assertEq, fill, replicate, vec', zipWithE, (+>), (<+>))
 import Data.Functor.Indexed (class IxFunctor)
 import Data.List (List)
 import Data.Newtype (class Newtype, unwrap)
@@ -39,9 +39,6 @@ instance freeProgramIxApply :: IxApplicative Ctxt where
 instance freeProgramIxBind :: IxBind Ctxt where
   ibind (Ctxt monad) function = Ctxt (monad >>= (unwrap <<< function))
 instance freeProgramIxMonad :: IxMonad Ctxt
-
------------------
--- compiles because we have asserted equality
 
 test0 (list0 :: List Int) (list1 :: List Int) = Ix.do
   ipure unit :: Ctxt Unk0' Unk0' Unit
@@ -145,6 +142,13 @@ test10 (list0 :: List Int) (list1 :: List Int) (list2 :: List Int) = Ix.do
   let step1 = zipWithE (+) l r
   ipure $ zipWithE (+) step1 m
 -}
+
+test11 (list0 :: List Int) (list1 :: List Int) = Ix.do
+  ipure unit :: Ctxt Unk0' Unk0' Unit
+  v0 <- vec list0
+  v1 <- vec list1
+  l /\ r <- assertEq (error "not eq") (v0 /\ v1)
+  ipure $ zipWithE (+) (zipWithE (+) l r) (fill l (const 0))
 
 main :: Effect Unit
 main = mempty
