@@ -9,12 +9,16 @@ import Control.Monad.Error.Class (class MonadThrow)
 import Control.Monad.Except (Except)
 import Control.Monad.Indexed (class IxMonad)
 import Control.Monad.Indexed.Qualified as Ix
-import Data.DT.Vec (Unk0', assertEq, replicate, vec, zipWithE, (+>), (<+>))
+import Data.DT.Vec (Unk', Unk0', UnkX', Var', Vec, VecSig', assertEq, replicate, vec', zipWithE, (+>), (<+>))
 import Data.Functor.Indexed (class IxFunctor)
+import Data.List (List)
 import Data.Newtype (class Newtype, unwrap)
 import Data.Tuple.Nested ((/\))
 import Effect (Effect)
 import Effect.Exception (Error, error)
+
+vec :: forall a m (u :: Unk'). VecSig' a m u u (UnkX' u)
+vec = vec' :: VecSig' a m u u (UnkX' u)
 
 newtype Ctxt :: forall k1 k2. k1 -> k2 -> Type -> Type
 newtype Ctxt i o a

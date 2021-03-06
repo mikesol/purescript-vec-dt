@@ -10,13 +10,14 @@ module Data.DT.Vec
   , Nat'
   , UnkX'
   , Var'
+  , VecSig'
   , class Unkable
   , class BalanceExpr
   , class EqExpr
   , class Leftmost
   , consVec
   , appendVec
-  , vec
+  , vec'
   , assertEq
   , zipWithE
   , replicate
@@ -61,7 +62,7 @@ newtype Vec (n :: Expr') a
   = Vec (List a)
 
 class Unkable :: forall k. k -> Unk' -> Constraint
-class Unkable k (u :: Unk') | k -> u, u -> k
+class Unkable k (u :: Unk') | k -> u
 
 instance unkableUnkable0 :: Unkable Unk0' Unk0'
 instance unkableUnkableX :: Unkable (UnkX' a) (UnkX' a)
@@ -158,8 +159,10 @@ instance eqExpr :: (BalanceExpr a c, BalanceExpr b c) => EqExpr a b
 
 -- | Construct a vector of unknown length
 -- |
-vec :: forall a m (u :: Unk') i o. Unkable i u => Unkable o (UnkX' u) => Applicative (m i o) => List a -> m i o (Vec (Var' u) a)
-vec = pure <<< Vec
+type VecSig' :: forall ix ox. Type -> (ix -> ox -> Type -> Type) -> Unk' -> ix -> ox -> Type
+type VecSig' a m (u :: Unk') i o = Unkable i u => Unkable o (UnkX' u) => Applicative (m i o) => List a -> m i o (Vec (Var' u) a)
+vec' :: forall a m (u :: Unk') i o. VecSig' a m u i o
+vec' = pure <<< Vec
 
 
 -- | Construct a vector of unknown length
