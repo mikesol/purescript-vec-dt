@@ -18,11 +18,13 @@ prog = do
 
 The issue with this code is that it requires remembering to make an assertion before every use of `zipWith`.
 
-A better way to do this would be to reify the value-level assertion into the type level.
+## Enter dependent types
 
 According to Wikipedia:
 
 > In computer science and logic, a dependent type is a type whose definition depends on a value.
+
+This library presents a novel approach to dependent types by approximating them with scoped computation contexts and compile-time assertions.
 
 In the [tests](./test/Main.purs) of this library, you'll see the following commented-out code:
 

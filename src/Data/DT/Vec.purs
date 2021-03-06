@@ -25,6 +25,7 @@ module Data.DT.Vec
   , (+>)
   , (<+>)
   , fill
+  , toList
   ) where
 
 import Prelude
@@ -210,3 +211,6 @@ replicate (Vec l) i = Vec (U.replicate (L.length l) i)
 
 fill :: forall (a :: Expr') x b. Vec a x -> (Int -> b) -> Vec a b
 fill (Vec l) f = Vec (f <$> L.range 0 (L.length l))
+
+toList :: forall (a :: Expr'). Vec a ~> L.List
+toList (Vec l) = l
