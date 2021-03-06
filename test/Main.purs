@@ -123,6 +123,28 @@ test8 (list0 :: List Int) (list1 :: List Int) (list2 :: List Int) = Ix.do
   let step1 = zipWithE (+) l r
   ipure $ zipWithE (+) step1 m
 
+test9 (list0 :: List Int) (list1 :: List Int) (list2 :: List Int) = Ix.do
+  ipure unit :: Ctxt Unk0' Unk0' Unit
+  v0 <- vec list0
+  v1 <- vec list1
+  v2 <- vec list2
+  l /\ m <- assertEq (error "not eq") (v0 /\ v1)
+  _ /\ r <- assertEq (error "not eq") (l /\ v2)
+  let step1 = zipWithE (+) l r
+  ipure $ zipWithE (+) step1 m
+
+{-
+-- won't work as the equality graph is not transitive
+test10 (list0 :: List Int) (list1 :: List Int) (list2 :: List Int) = Ix.do
+  ipure unit :: Ctxt Unk0' Unk0' Unit
+  v0 <- vec list0
+  v1 <- vec list1
+  v2 <- vec list2
+  l /\ m <- assertEq (error "not eq") (v0 /\ v1)
+  _ /\ r <- assertEq (error "not eq") (v1 /\ v2)
+  let step1 = zipWithE (+) l r
+  ipure $ zipWithE (+) step1 m
+-}
 
 main :: Effect Unit
 main = mempty
