@@ -49,7 +49,7 @@ test0 (list0 :: List Int) (list1 :: List Int) = Ix.do
   ipure $ zipWithE (+) l r
 ```
 
-Now, we have a typelevel assertion in our indexed monad that `v0` and `v1` are equal. Proof of this assertion lies in the values `l` and `r` and rides through the rest of the computation until `zipWithE`.
+Now, we have a typelevel assertion in our indexed monad that `v0` and `v1` are equal. Proof of this assertion lies in the values `l` and `r` and persists through the rest of the computation until `zipWithE`.
 
 The assertion system also works for arbitrary append (`<+>`) and cons (`+>`) operations. In the following example, also from the tests, proof of equal length persists through the list append operation `<+>`.
 
