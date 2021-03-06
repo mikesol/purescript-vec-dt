@@ -19,7 +19,7 @@ module Data.DT.Vec
   , consVec
   , appendVec
   , vec
-  , assertEq2
+  , assertEq
   , zipWithE
   , replicate
   , (+>)
@@ -168,8 +168,8 @@ vec = pure <<< Vec
 
 -- | Construct a vector of unknown length
 -- |
-assertEq2 :: forall a err m (j :: Expr') (k :: Expr').  MonadThrow err m => err -> Vec j a -> Vec k a -> m ((Vec j a) /\ (Vec j a))
-assertEq2 err (Vec a) (Vec b)
+assertEq :: forall a err m (j :: Expr') (k :: Expr').  MonadThrow err m => err -> Vec j a -> Vec k a -> m ((Vec j a) /\ (Vec j a))
+assertEq err (Vec a) (Vec b)
   | L.length a == L.length b = pure $ (Vec a) /\ (Vec b)
   | otherwise = throwError err
 

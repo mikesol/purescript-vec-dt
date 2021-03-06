@@ -43,7 +43,7 @@ test0 list0 list1 = Ix.do
   ipure unit :: Ctxt Unk0' Unk0' Unit
   v0 <- vec list0
   v1 <- vec list1
-  l /\ r <- assertEq2 (error "not eq") v0 v1
+  l /\ r <- assertEq (error "not eq") v0 v1
   ipure $ zipWithE (+) l r
 ```
 
@@ -58,14 +58,14 @@ test6 list0 list1 list2 list3 = Ix.do
   v1 <- vec list1
   v2 <- vec list2
   v3 <- vec list3
-  l /\ r <- assertEq2 (error "not eq") v0 v1
-  x /\ y <- assertEq2 (error "not eq") v2 v3
+  l /\ r <- assertEq (error "not eq") v0 v1
+  x /\ y <- assertEq (error "not eq") v2 v3
   ipure $ zipWithE (+) (l <+> y) (x <+> r)
 ```
 
-This library brings dependent types to vectors by using the type system to allow certain operations, like `zipWithE`, to be performed only if certain assertions about values, like `assertEq2`, succeed.
+This library brings dependent types to vectors by using the type system to allow certain operations, like `zipWithE`, to be performed only if certain assertions about values, like `assertEq`, succeed.
 
 ## TODO
 
 - [ ] make equality transitive
-- [ ] encode equality in a typeclass to avoid `assertEq2`, `assertEq3` etc
+- [ ] encode equality in a typeclass to avoid `assertEq`, `assertEq3` etc
